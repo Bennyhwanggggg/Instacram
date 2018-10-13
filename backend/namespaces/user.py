@@ -102,11 +102,12 @@ class Feed(Resource):
         wildcards = ','.join(['?']*len(following))
         q = 'SELECT * FROM POSTS WHERE author in ({})'.format(wildcards)
         q+=' LIMIT ? OFFSET ?'
+        print(following)
         following.append(n)
         following.append(p)
         all_posts = db.raw(q,following)
         all_posts = [format_post(row) for row in all_posts]
-        all_posts.sort(reverse=True,key=lambda x: float(x["meta"]["published"]))
+        all_posts.sort(reverse=True,key=lambda x: int(x["meta"]["published"]))
         return {
             'posts': all_posts
         }

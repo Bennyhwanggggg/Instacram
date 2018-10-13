@@ -1,4 +1,4 @@
-const API_URL = 'http://127.0.0.1:8080/data'
+const API_URL = 'http://localhost:5000'
 
 const getJSON = (path, options) => 
     fetch(path, options)
@@ -46,47 +46,63 @@ function checkStore(key) {
         return null
 }
 
-function setloggedin(usr, name) {
+function setloggedin(usr, token) {
     window.localStorage.setItem('logged_in', usr);
-    window.localStorage.setItem('curr_user', name);
-    console.log('logged in now');
+    window.localStorage.setItem('token', token);
 }
 
 
 function login() {
 	var usr = document.getElementById('usr').value;
 	var pw = document.getElementById('password').value;
-	var data = api.makeAPIRequest('users.json');
-	var valid = false;
-	data.then(function(res) {
-		for(var i=0; i<res.length; i++) {
-			if (res[i]['username'] == usr) {
-				setloggedin(usr, res[i]['name']);
-				valid=true
-				window.location = "/";
-				break;
-			}
-		}
-		if (!valid) {
-			document.getElementById('status').innerHTML = 'Invalid username/password';
-		}
-	})
+
+	fetch('http://localhost:5000/auth/login', {
+				method: 'POST',
+				body: JSON.stringify({
+					username : usr,
+					password :pw
+				}),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then(function(res) {
+				if (res.status == 200) {
+					res.json().then(function(token) {
+						setloggedin(usr, token['token']);
+						window.location = "/";
+					})
+				} else {
+					document.getElementById('status').innerHTML = 'Invalid username/password';
+				}
+			});
 }
+
 
 function register() {
 	var usr = document.getElementById('usr').value;
 	var pw = document.getElementById('password').value;
-	var data = api.makeAPIRequest('users.json');
-	data.then(function(res) {
-		for(var i=0; i<res.length; i++) {
-			if (res[i]['username'] == usr) {
-				document.getElementById('status').innerHTML = 'This username is already taken';
-				window.location = "/";
-				break;
-			}
-		}
-	})
-
+	var usr_name = document.getElementById('name').value;
+	var usr_email = document.getElementById('email').value;
+	// var data = api.makeAPIRequest('auth/signup');
+	// console.log(data);
+	fetch('http://localhost:5000/auth/signup', {
+				method: 'POST',
+				body: JSON.stringify({
+					username : usr,
+					password : pw,
+					name : usr_name,
+					email : usr_email
+				}),
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}).then(function(res) {
+				if (res.status == 200) {
+					window.location = "/";
+				} else {
+					document.getElementById('status').innerHTML = 'Invalid username/password';
+				}
+			});
 }
 
 

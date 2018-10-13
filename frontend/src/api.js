@@ -1,5 +1,8 @@
 // change this when you integrate with the real API, or when u start using the dev server
-const API_URL = 'http://localhost:8080/data'
+// const API_URL = 'http://localhost:8080/data'
+
+const API_URL = 'http://localhost:5000'
+
 
 const getJSON = (path, options) => 
     fetch(path, options)
@@ -36,6 +39,18 @@ export default class API {
      */
     getMe() {
         return this.makeAPIRequest('me.json');
+    }
+
+    getFeeds() {
+        var token = window.localStorage.getItem('token');
+        return fetch(`${this.url}/user/feed`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
+            }
+        }).then(res => res.json())
+        .catch(err => console.warn(`API_ERROR: ${err.message}`));
     }
 
 }

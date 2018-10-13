@@ -7,7 +7,11 @@ import API from './api.js';
 const api  = new API();
 
 // we can use this single api request multiple times
-const feed = api.getFeed();
+// const feed = api.makeAPIRequest('user/feed');
+
+const feed = api.getFeeds();
+
+feed.then(posts => {console.log(posts)});
 
 feed
 .then(posts => {
@@ -38,7 +42,7 @@ if (curr_user != null) {
 
 function getCurrentUser(){
 	if (window.localStorage)
-        return window.localStorage.getItem('curr_user');
+        return window.localStorage.getItem('logged_in');
     else
         return null
 }
