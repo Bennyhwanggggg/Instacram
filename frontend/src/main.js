@@ -15,7 +15,7 @@ feed.then(posts => {console.log(posts)});
 
 feed
 .then(posts => {
-    posts.reduce((parent, post) => {
+    posts['posts'].reduce((parent, post) => {
 
         parent.appendChild(createPostTile(post));
         
@@ -34,7 +34,6 @@ var curr_user = getCurrentUser();
 var feeds = document.getElementById('large-feed');
 if (curr_user != null) {
 	user.innerHTML = curr_user;
-	feeds.innerHTML = "Not Yet Implemented";
 } else {
 	user.innerHTML = "Login";
 }

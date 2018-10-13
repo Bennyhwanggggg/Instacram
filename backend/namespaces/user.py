@@ -117,7 +117,6 @@ class Feed(Resource):
         wildcards = ','.join(['?']*len(following))
         q = 'SELECT * FROM POSTS WHERE author in ({})'.format(wildcards)
         q+=' LIMIT ? OFFSET ?'
-        print(following)
         following.append(n)
         following.append(p)
         all_posts = db.raw(q,following)

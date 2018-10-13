@@ -40,7 +40,33 @@ export function createPostTile(post) {
     section.appendChild(createElement('h2', post.meta.author, { class: 'post-title' }));
 
     section.appendChild(createElement('img', null, 
-        { src: '/images/'+post.src, alt: post.meta.description_text, class: 'post-image' }));
+        { src: 'data:image/png;base64,'+post.src, alt: post.meta.description_text, class: 'post-image' }));
+
+    section.appendChild(createElement('h4', post.meta.description_text, { class: 'post-description' }));
+
+    const number_of_likes = post.meta.likes.length;
+    if (number_of_likes > 0) {
+        if (number_of_likes > 1) {
+            section.appendChild(createElement('h5', `${number_of_likes} likes`, {class: 'post-like' }));
+        } else {
+            section.appendChild(createElement('h5', `${number_of_likes} like`, {class: 'post-like' }));
+        }
+    } else {
+        section.appendChild(createElement('h5', `0 likes`, {class: 'post-like' }));
+    }
+
+    const number_of_comments = post.comments.length;
+    if (number_of_comments > 0) {
+        if (number_of_comments > 1) {
+            section.appendChild(createElement('h5', `${number_of_comments} comments`, {class: 'post-comment'}));
+        } else {
+            section.appendChild(createElement('h5', `${number_of_comments} comment`, {class: 'post-comment'}));
+        }
+    } else {
+        section.appendChild(createElement('h5', `${number_of_comments} comments`, {class: 'post-comment'}));
+    }
+
+    section.appendChild(createElement('h6', post.meta.published, { class: 'post-time'}));
 
     return section;
 }
