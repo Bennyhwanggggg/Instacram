@@ -45,6 +45,10 @@ footer {
     list-style-type: none;
 }
 
+.nav-item a{
+     text-decoration: none; 
+}
+
 .post {
     max-width: 640px;
     overflow: hidden;

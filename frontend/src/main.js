@@ -25,3 +25,20 @@ const input = document.querySelector('input[type="file"]');
 
 input.addEventListener('change', uploadImage);
 
+const user = document.getElementById('curr_user');
+var curr_user = getCurrentUser();
+var feeds = document.getElementById('large-feed');
+if (curr_user != null) {
+	user.innerHTML = curr_user;
+	feeds.innerHTML = "Not Yet Implemented";
+} else {
+	user.innerHTML = "Login";
+}
+
+
+function getCurrentUser(){
+	if (window.localStorage)
+        return window.localStorage.getItem('curr_user');
+    else
+        return null
+}
