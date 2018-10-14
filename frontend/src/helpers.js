@@ -202,10 +202,16 @@ export function createPostTile(post) {
                  people.then(function(names) {
                     var modalContent = document.getElementById('modalContent');
                     clearModalContent();
+                    modalContent.appendChild(createElement('div', 'People who liked this:', {class: 'liked_title'}));
+                    if (names.length == 0) {
+                        modalContent.appendChild(createElement('p', 'no one has liked this post yet.', {class: 'liked_title'}));
+                    }
+                    var liked_users_list = createElement('ul', name, {class: 'liked_users'});
                     for (var i=0; i<names.length; i++){
                         var name = names[i];
-                        modalContent.appendChild(createElement('li', name, {class: 'liked_users'}));
+                        liked_users_list.appendChild(createElement('li', name, {class: 'liked_users'}));
                     }
+                    modalContent.appendChild(liked_users_list);
                 })
             });
         })
@@ -231,6 +237,9 @@ export function createPostTile(post) {
         }).then(function(res) {
             res.json().then(function(data) {
                 var modalContent = document.getElementById('modalContent');
+                if (data.comments.length == 0) {
+                    modalContent.appendChild(createElement('div', 'No comments', {class: 'user_comments'}));
+                }
                 for (var i=0; i<data.comments.length; i++) {
                     modalContent.appendChild(createElement('li', data.comments[i].comment, {class: 'user_comments'}));
                 }
