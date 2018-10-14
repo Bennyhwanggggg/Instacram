@@ -47,18 +47,7 @@ export function getUserNames(list_of_ids) {
         });
     })
 
-
     var list_of_usernames = Promise.all(result).then(res => res.map(response => response.name));
-    // .then(function(finalResult){
-    //     return finalResult;
-    // });
-
-
-    // const usernames = Promi;
-    // console.log(list_of_usernames)
-    // Promise.all(list_of_usernames).then(res => console.log(res));
-
-
     return list_of_usernames;
 }
 
@@ -73,7 +62,15 @@ export function createPostTile(post) {
 
     const section = createElement('section', null, { class: 'post' , id: post.id});
 
-    section.appendChild(createElement('h2', post.meta.author, { class: 'post-title' }));
+    const post_title = createElement('a', post.meta.author, {href: '#modalWindow'});
+
+    post_title.addEventListener('click', function() {
+        
+    })
+
+    const post_title_wrapper = createElement('h2', null, { class: 'post-title'});
+    post_title_wrapper.appendChild(post_title);
+    section.appendChild(post_title_wrapper);
 
     section.appendChild(createElement('img', null, 
         { src: 'data:image/png;base64,'+post.src, alt: post.meta.description_text, class: 'post-image' }));
@@ -135,14 +132,25 @@ export function createPostTile(post) {
     section.appendChild(createElement('h4', post.meta.description_text, { class: 'post-description' }));
 
     liked_people.addEventListener('click', function() {
-        var people = getUserNames(post.meta.likes);
-        people.then(function(names) {
-            var modalContent = document.getElementById('modalContent');
-            clearModalContent();
-            for (var i=0; i<names.length; i++){
-                var name = names[i];
-                modalContent.appendChild(createElement('li', name, {class: 'liked_users'}));
+
+        fetch(`${API_URL}/post?id=${post.id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
             }
+        }).then(function(res) {
+            res.json().then(function(data) {
+                var people = getUserNames(data.meta.likes);
+                 people.then(function(names) {
+                    var modalContent = document.getElementById('modalContent');
+                    clearModalContent();
+                    for (var i=0; i<names.length; i++){
+                        var name = names[i];
+                        modalContent.appendChild(createElement('li', name, {class: 'liked_users'}));
+                    }
+                })
+            });
         })
     })
 
@@ -155,11 +163,21 @@ export function createPostTile(post) {
     }
 
     comments_button.addEventListener('click', function() {
-        clearModalContent()
-        var modalContent = document.getElementById('modalContent');
-        for (var i=0; i<number_of_comments; i++) {
-            modalContent.appendChild(createElement('li', post.comments[i].comment, {class: 'user_comments'}));
-        }
+        clearModalContent();
+
+        fetch(`${API_URL}/post?id=${post.id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
+            }
+        }).then(function(res) {
+            res.json().then(function(data) {
+                for (var i=0; i<data.comments.length; i++) {
+                    modalContent.appendChild(createElement('li', data.comments[i].comment, {class: 'user_comments'}));
+                }
+            });
+        })
     })
 
 
@@ -215,8 +233,10 @@ export function clearModalContent() {
 }
 
 // Given an input element of type=file, grab the data uploaded for use
-export function uploadImage(event) {
-    const [ file ] = event.target.files;
+export function uploadImage() {
+
+    var input = document.querySelector('input[type="file"]');
+    var [ file ] = input.files;
 
     const validFileTypes = [ 'image/jpeg', 'image/png', 'image/jpg' ]
     const valid = validFileTypes.find(type => type === file.type);
@@ -231,12 +251,32 @@ export function uploadImage(event) {
     reader.onload = (e) => {
         // do something with the data result
         const dataURL = e.target.result;
-        const image = createElement('img', null, { src: dataURL });
-        document.body.appendChild(image);
+        const base64Data = dataURL.split(',')[1];
+
+        const description = document.getElementById('description').value;
+
+        fetch(`${API_URL}/post`, {
+            method: 'POST',
+            body: JSON.stringify({
+                description_text : description,
+                src : base64Data
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
+            }
+        }).then(function(res) {
+            if (res.status == 200) {
+                document.getElementById('status').innerHTML = 'Success!';
+                document.getElementById('description').value = '';
+            } else {
+                document.getElementById('status').innerHTML = 'Failed to post!';
+            }
+        })
     };
 
     // this returns a base64 image
-    console.log(reader.readAsDataURL(file));
+    reader.readAsDataURL(file);
 }
 
 /* 

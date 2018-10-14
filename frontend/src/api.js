@@ -53,4 +53,16 @@ export default class API {
         .catch(err => console.warn(`API_ERROR: ${err.message}`));
     }
 
+    getFeedsFrom(p) {
+        var token = window.localStorage.getItem('token');
+        return fetch(`${this.url}/user/feed?p=${p}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
+            }
+        }).then(res => res.json())
+        .catch(err => console.warn(`API_ERROR: ${err.message}`));
+    }
+
 }

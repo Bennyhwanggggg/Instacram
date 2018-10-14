@@ -111,6 +111,10 @@ footer {
     cursor: pointer;
 }
 
+.post-title {
+    cursor: pointer;
+}
+
 .post_comment {
     width: 80%;
 }
