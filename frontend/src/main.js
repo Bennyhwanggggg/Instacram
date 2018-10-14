@@ -22,7 +22,7 @@ feed
         return parent;
 
     }, document.getElementById('large-feed'))
-});
+}).catch(err => console.log('Not loged in yet'));
 
 // Upload button;
 const upload = document.getElementById('uploadButton');
@@ -40,7 +40,7 @@ if (edit) {
 		var newDescription = document.getElementById('edit_description').value;
 
 		var input = document.querySelector('input[type="file"]');
-		if (input && newDescription) {
+		if (input.files.length && newDescription) {
 			var [ file ] = input.files;
 
 	    const validFileTypes = [ 'image/jpeg', 'image/png', 'image/jpg' ]
@@ -81,6 +81,66 @@ if (edit) {
 
 	    // this returns a base64 image
 	    reader.readAsDataURL(file);
+		} else if (input.files.length) {
+			var [ file ] = input.files;
+
+	    const validFileTypes = [ 'image/jpeg', 'image/png', 'image/jpg' ]
+	    const valid = validFileTypes.find(type => type === file.type);
+
+	    // bad data, let's walk away
+	    if (!valid)
+	        return false;
+	    
+	    // if we get here we have a valid image
+	    const reader = new FileReader();
+	    
+	    reader.onload = (e) => {
+	        // do something with the data result
+	        const dataURL = e.target.result;
+	        const base64Data = dataURL.split(',')[1];
+	        console.log(newDescription);
+
+	        fetch(`${API_URL}/post?id=${id}`, {
+	            method: 'PUT',
+	            body: JSON.stringify({
+	                src : base64Data
+	            }),
+	            headers: {
+	                'Content-Type': 'application/json',
+	                'Authorization' : `Token ${token}`
+	            }
+	        }).then(function(res) {
+	            if (res.status == 200) {
+	                document.getElementById('status').innerHTML = 'Success!';
+	                document.getElementById('edit_description').value = '';
+	            } else {
+	                document.getElementById('status').innerHTML = 'Failed to edit!';
+	            }
+	        })
+	    };
+
+	    // this returns a base64 image
+	    reader.readAsDataURL(file);
+		} else if (newDescription) {
+			fetch(`${API_URL}/post?id=${id}`, {
+	            method: 'PUT',
+	            body: JSON.stringify({
+	                description_text : newDescription
+	            }),
+	            headers: {
+	                'Content-Type': 'application/json',
+	                'Authorization' : `Token ${token}`
+	            }
+	        }).then(function(res) {
+	            if (res.status == 200) {
+	                document.getElementById('status').innerHTML = 'Success!';
+	                document.getElementById('edit_description').value = '';
+	            } else {
+	                document.getElementById('status').innerHTML = 'Failed to edit!';
+	            }
+	        })
+		} else {
+			document.getElementById('status').innerHTML = 'No input given!';
 		}
 	})
 }
@@ -150,11 +210,9 @@ if (curr_user != null) {
 				info.appendChild(createElement('div', `Username: ${data.username}`, {id: 'profile_username'}));
 				info.appendChild(createElement('div', `Email: ${data.email}`, {id: 'profile_email'}));
 				info.appendChild(createElement('div', `Number of posts: ${data.posts.length}`, {id: 'profile_posts'}));
-				info.appendChild(createElement('div', `Number of people following: ${data.followed_num}`, {id: 'profile_followers'}));
+				info.appendChild(createElement('div', `Followers: ${data.followed_num}`, {id: 'profile_followers'}));
         info.appendChild(createElement('div', 'Following:', {id: 'followers_container'}));
-        if (data.followed_num == 0){
-          info.appendChild(createElement('div', 'no info to show', {class: 'noinfomsg'}));
-        }
+
         var followers = getUserNames(data.following);
         followers.then(function(f) {
           var followers_list = createElement('ul', null, {class: 'followersList'});

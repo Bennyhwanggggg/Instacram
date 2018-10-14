@@ -81,7 +81,7 @@ export function createPostTile(post) {
                 info.appendChild(createElement('div', `Username: ${data.username}`, {id: 'profile_username'}));
                 info.appendChild(createElement('div', `Email: ${data.email}`, {id: 'profile_email'}));
                 info.appendChild(createElement('div', `Number of posts: ${data.posts.length}`, {id: 'profile_posts'}));
-                info.appendChild(createElement('div', `Number of people following: ${data.followed_num}`, {id: 'profile_followers'}));
+                info.appendChild(createElement('div', `Followers: ${data.followed_num}`, {id: 'profile_followers'}));
                 // info.appendChild(createElement('div', 'Following:', {id: 'followers_container'}));
 
                 // if (data.followed_num == 0){

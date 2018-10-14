@@ -5,3 +5,4 @@
 14/10/18     16:00   19:20   level2 completed and infinite scroll and profile update done
 14/10/18     20:30   22:30   user profile updated to show follower and post history, follow added
 14/10/18     23:15   00:20   level3 done and css updated
+15/10/18     08:30   09:10   small text changes
