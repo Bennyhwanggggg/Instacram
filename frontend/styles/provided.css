@@ -103,6 +103,10 @@ footer {
 
 /* Add your styles here */
 
+#profile_history {
+    margin-top: 30px;
+}
+
 .like_button {
     cursor: pointer;
 }
@@ -115,10 +119,44 @@ footer {
     cursor: pointer;
 }
 
+.post_history {
+    display: block;
+}
+
+.top_input {
+    cursor: pointer;
+} 
+
+.post_history_image {
+    width: 30%;
+    height: 30%;
+}
+
 .post_comment {
     width: 80%;
 }
 
+.post_history_image_container img{
+    /*float: left;*/
+    margin-left: 30%;
+    /*display: inline-block;*/
+    /*position: relative;*/
+}
+
+.post_history_description {
+    /*float: right;*/
+    /*display: inline-block;*/
+    /*position: relative;*/
+}
+/*
+.post_history_description {
+    float: right;
+    margin-left: 35%;
+    vertical-align: top;
+    display: inline-block;
+    position: relative;
+}
+*/
 #modalWindow {
     position: fixed;
     font-family: arial,helvetica, sans-serif;
@@ -133,12 +171,14 @@ footer {
     pointer-events: none;
 }
 #modalWindow:target {
-    opacity:0.8;
+    opacity:0.97;
     pointer-events: auto;
 }
 #modalWindow > div {
     width: 400px;
-    height: 240px;
+    /*height: 240px;*/
+    overflow-y: auto;
+    max-height: calc(100vh - 210px);
     position: relative;
     margin: 10% auto;
     padding: 20px 20px 13px 20px;

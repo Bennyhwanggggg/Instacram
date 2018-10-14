@@ -65,7 +65,64 @@ export function createPostTile(post) {
     const post_title = createElement('a', post.meta.author, {href: '#modalWindow'});
 
     post_title.addEventListener('click', function() {
-        
+        clearModalContent();
+        var modalContent = document.getElementById('modalContent');
+        fetch(`${API_URL}/user?username=${post.meta.author}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
+            }
+        }).then(function(res) {
+            res.json().then(function(data) {
+                modalContent.appendChild(createElement('h3', data.name, {id: 'profile_name'}));
+                var info = createElement('div', null, {id: 'profile_info'});
+                info.appendChild(createElement('div', `ID: ${data.id}`, {id: 'profile_id'}));
+                info.appendChild(createElement('div', `Username: ${data.username}`, {id: 'profile_username'}));
+                info.appendChild(createElement('div', `Email: ${data.email}`, {id: 'profile_email'}));
+                info.appendChild(createElement('div', `Number of posts: ${data.posts.length}`, {id: 'profile_posts'}));
+                info.appendChild(createElement('div', `Number of people following: ${data.followed_num}`, {id: 'profile_followers'}));
+                // info.appendChild(createElement('div', 'Following:', {id: 'followers_container'}));
+
+                // if (data.followed_num == 0){
+                //     info.appendChild(createElement('div', 'no info to show', {class: 'noinfomsg'}));
+                // }
+
+                // var followers = getUserNames(data.following);
+                // followers.then(function(f) {
+                //     var followers_list = createElement('ul', null, {class: 'followersList'});
+                //     for(var i=0; i<f.length; i++) {
+                //         followers_list.appendChild(createElement('li', f[i], {class: 'follower'}));
+                //     }
+                //     info.appendChild(followers_list);
+                // })
+
+                info.appendChild(createElement('div', `History: `, {id: 'profile_history'}));
+
+                // info.appendChild(createElement('div', `History: `, {id: 'profile_history'}));
+                modalContent.appendChild(info);
+
+                for (var i=0; i<data.posts.length; i++) {
+                    fetch(`${API_URL}/post?id=${data.posts[i]}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization' : `Token ${token}`
+                        }
+                    }).then(function(res) {
+                        res.json().then(function(post_content) {
+                            var historicalPost = createElement('div', null, {id: 'post_history'});
+                            historicalPost.appendChild(createElement('h4', `Created on ${Date(post_content.meta.published)}`, {class: 'post_history_published_date'}));
+                            var imageContainer = createElement('div', null, {class: 'post_history_image_container'});
+                            imageContainer.appendChild(createElement('img', null, { src: 'data:image/png;base64,'+post_content.src, alt: post_content.meta.description_text, class: 'post_history_image' }));
+                            imageContainer.appendChild(createElement('div', `Descrption: ${post_content.meta.description_text}`, {class: 'post_history_description'}));
+                            historicalPost.appendChild(imageContainer);
+                            modalContent.appendChild(historicalPost);
+                        })
+                    })
+                }
+            })
+        })
     })
 
     const post_title_wrapper = createElement('h2', null, { class: 'post-title'});
@@ -173,6 +230,7 @@ export function createPostTile(post) {
             }
         }).then(function(res) {
             res.json().then(function(data) {
+                var modalContent = document.getElementById('modalContent');
                 for (var i=0; i<data.comments.length; i++) {
                     modalContent.appendChild(createElement('li', data.comments[i].comment, {class: 'user_comments'}));
                 }

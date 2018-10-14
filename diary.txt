@@ -3,3 +3,4 @@
 13/10/18     22:30   23:50   level1 completed
 14/10/18     10:30   15:20   implemented show likes show comment both live and insert comment
 14/10/18     16:00   19:20   level2 completed and infinite scroll and profile update done
+14/10/18     20:30   22:30   user profile updated to show follower and post history, follow added
