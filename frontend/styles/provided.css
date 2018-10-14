@@ -45,14 +45,25 @@ footer {
     list-style-type: none;
 }
 
-.nav-item a{
+.nav-item a {
      text-decoration: none; 
+}
+
+.nav-item a:hover {
+    text-decoration: none; 
 }
 
 .post a{
      text-decoration: none;
      display: inline-block;
      margin-right: 42px;
+     margin-left: 10px;
+     margin-bottom: 10px;
+     margin-top: 10px;
+}
+
+.post a:hover{
+     text-decoration: none; 
 }
 
 .post {
@@ -68,6 +79,11 @@ footer {
     margin: 0;
     border-bottom: 1px solid rgba(0,0,0,.0975);
 }
+
+.post-title a:hover {
+    text-decoration: none;
+}
+
 
 .post-thumb {
     margin: 0;
@@ -132,31 +148,56 @@ footer {
     height: 30%;
 }
 
+.post-interactive {
+    margin: 5px 10px;
+}
+
+.post-description{
+    margin: 10px;
+}
+
 .post_comment {
     width: 80%;
 }
 
 .post_history_image_container img{
-    /*float: left;*/
-    margin-left: 30%;
-    /*display: inline-block;*/
-    /*position: relative;*/
+    margin: 0 auto;
 }
 
-.post_history_description {
-    /*float: right;*/
-    /*display: inline-block;*/
-    /*position: relative;*/
+.post-time {
+    margin-left: 10px;
+    margin-right: 10px;
 }
-/*
-.post_history_description {
+
+.comment_box {
+    margin: 0 10px;
+}
+
+.post_history_published_date {
+    margin-top: 25px;
+}
+
+#removePostButton {
+    margin-left: 10px;
+    margin-right: 10px;
     float: right;
-    margin-left: 35%;
-    vertical-align: top;
-    display: inline-block;
-    position: relative;
+    text-decoration: none; 
 }
-*/
+
+#removePostButton a {
+    text-decoration: none;
+}
+
+#editPostButton{
+    float: right;
+    margin-right: 10px;
+    text-decoration: none; 
+}
+
+#editPostButton a:hover{
+    text-decoration: none; 
+}
+
 #modalWindow {
     position: fixed;
     font-family: arial,helvetica, sans-serif;
@@ -175,16 +216,16 @@ footer {
     pointer-events: auto;
 }
 #modalWindow > div {
-    width: 400px;
+    width: 90%;
     /*height: 240px;*/
     overflow-y: auto;
     max-height: calc(100vh - 210px);
     position: relative;
     margin: 10% auto;
-    padding: 20px 20px 13px 20px;
+    padding: 10px 10px 10px 10px;
     border: solid;
     border-color: black;
     border-width : 2px;
     background: #FFFFFF;
-    border-radius: 10px;
+    border-radius: 5px;
 }   

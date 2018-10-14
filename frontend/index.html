@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- You can add your styles and scripts here -->
     <link rel="stylesheet" type="text/css" media="screen" href="styles/provided.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script type="module" src="src/helpers.js"></script>
     <script type="module" src="src/helpers.js"></script>
     <script type="module" src="src/api.js"></script>
 </head>
@@ -14,14 +16,14 @@
     <!-- This is an example app structure --> 
     <header class='banner'>
         <h1>Instacram</h1>
-        <ul class='nav'>
+        <ul class='nav-bar'>
             <li class="nav-item" id='followBar'><input type="text" id='add_follow'/><span class='top_input' id='followButton'>Follow</span></li>
             <li class="nav-item" id='unfollowBar'><input type="text" id='remove_follow'/><span class='top_input' id='unfollowButton'>Unfollow</span></li>
             <li class='nav-item' id="newPostButton"><a href="/upload" id="newPost">New Post</a></li>
             <li class='nav-item' id="userButton"><a href="/login" id="curr_user">Login</a></li>
             <li class='nav-item' id="registerButton"><a href="/register">Register</a></li>
             <li class='nav-item' id="updateButton"><a href="/update">Update account</a></li>
-            <li class='nav-item' id="logoutButton"><a href="/">Logout</a></li>
+            <li class='nav-item' id="logoutButton"><a href="/index">Logout</a></li>
         </ul>
     </header>
     <main role='main'>

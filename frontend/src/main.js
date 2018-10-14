@@ -30,6 +30,61 @@ if (upload) {
 	upload.addEventListener('click', uploadImage);
 }
 
+// edit button;
+const edit = document.getElementById('editFinishedButton');
+if (edit) {
+	edit.addEventListener('click', function() {
+		var token = window.localStorage.getItem('token');
+		var id = window.localStorage.getItem('post_id_to_edit');
+		window.localStorage.removeItem('post_id_to_edit');
+		var newDescription = document.getElementById('edit_description').value;
+
+		var input = document.querySelector('input[type="file"]');
+		if (input && newDescription) {
+			var [ file ] = input.files;
+
+	    const validFileTypes = [ 'image/jpeg', 'image/png', 'image/jpg' ]
+	    const valid = validFileTypes.find(type => type === file.type);
+
+	    // bad data, let's walk away
+	    if (!valid)
+	        return false;
+	    
+	    // if we get here we have a valid image
+	    const reader = new FileReader();
+	    
+	    reader.onload = (e) => {
+	        // do something with the data result
+	        const dataURL = e.target.result;
+	        const base64Data = dataURL.split(',')[1];
+	        console.log(newDescription);
+
+	        fetch(`${API_URL}/post?id=${id}`, {
+	            method: 'PUT',
+	            body: JSON.stringify({
+	                description_text : newDescription,
+	                src : base64Data
+	            }),
+	            headers: {
+	                'Content-Type': 'application/json',
+	                'Authorization' : `Token ${token}`
+	            }
+	        }).then(function(res) {
+	            if (res.status == 200) {
+	                document.getElementById('status').innerHTML = 'Success!';
+	                document.getElementById('edit_description').value = '';
+	            } else {
+	                document.getElementById('status').innerHTML = 'Failed to edit!';
+	            }
+	        })
+	    };
+
+	    // this returns a base64 image
+	    reader.readAsDataURL(file);
+		}
+	})
+}
+
 const update = document.getElementById('updateButtonSubmit');
 if (update) {
 	update.addEventListener('click', function() {
@@ -75,7 +130,6 @@ var feeds = document.getElementById('large-feed');
 if (curr_user != null) {
 	user.innerHTML = curr_user;
 	user.href="#modalWindow";
-	document.getElementById('logoutButton').innerHTML = 'Logout';
 	document.getElementById('registerButton').style.display = 'none';
 
 	user.addEventListener('click', function() {
@@ -128,6 +182,28 @@ if (curr_user != null) {
                 imageContainer.appendChild(createElement('img', null, { src: 'data:image/png;base64,'+post_content.src, alt: post_content.meta.description_text, class: 'post_history_image' }));
                 imageContainer.appendChild(createElement('div', `Descrption: ${post_content.meta.description_text}`, {class: 'post_history_description'}));
                 historicalPost.appendChild(imageContainer);
+                var editContainer = createElement('div', null, {class: 'editContainer'});
+                var removePostButton = createElement('a', 'remove', {href: '/', id: 'removePostButton'})
+                var editPostButton = createElement('a', 'edit', {href: '/edit', id: 'editPostButton'})
+
+                removePostButton.addEventListener('click', function() {
+                	fetch(`${API_URL}/post?id=${post_content.id}`, {
+                		method: 'DELETE',
+                		headers: {
+				              'Content-Type': 'application/json',
+				              'Authorization' : `Token ${token}`
+				              }
+                	})
+                })
+
+                editPostButton.addEventListener('click', function() {
+                	window.localStorage.setItem('post_id_to_edit', post_content.id);
+                })
+
+                editContainer.appendChild(removePostButton);
+                editContainer.appendChild(editPostButton);
+            
+                historicalPost.appendChild(editContainer);
                 modalContent.appendChild(historicalPost);
               })
             })
@@ -221,6 +297,20 @@ if (followButton) {
         }
 			}).then(function(res) {
 				document.getElementById('add_follow').value = '';
+				if (res.status == 200) {
+					document.getElementById('large-feed').innerHTML = '';
+					const newfeed = api.getFeeds();
+					newfeed
+					.then(posts => {
+						posts['posts'].reduce((parent, post) => {
+
+						parent.appendChild(createPostTile(post));
+						        
+						  return parent;
+
+						  }, document.getElementById('large-feed'))
+					});
+				}
 			})
 		}
 	})
@@ -240,6 +330,20 @@ if (unfollowButton) {
         }
 			}).then(function(res) {
 				document.getElementById('remove_follow').value = '';
+				if (res.status == 200) {
+					document.getElementById('large-feed').innerHTML = '';
+					const newfeed = api.getFeeds();
+					newfeed
+					.then(posts => {
+						posts['posts'].reduce((parent, post) => {
+
+						parent.appendChild(createPostTile(post));
+						        
+						  return parent;
+
+						  }, document.getElementById('large-feed'))
+					});
+				}
 			})
 		}
 	})
