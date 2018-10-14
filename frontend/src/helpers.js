@@ -1,3 +1,6 @@
+const API_URL = 'http://localhost:5000';
+var token = window.localStorage.getItem('token');
+
 /* returns an empty array of size max */
 export const range = (max) => Array(max).fill(null);
 
@@ -29,46 +32,186 @@ export function createElement(tag, data, options = {}) {
         }, el);
 }
 
+export function getUserNames(list_of_ids) {
+
+    const result = list_of_ids.map(id => {
+        return fetch(`${API_URL}/user?id=${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
+            }
+        })
+        .then(function(res) {
+            return res.json();
+        });
+    })
+
+
+    var list_of_usernames = Promise.all(result).then(res => res.map(response => response.name));
+    // .then(function(finalResult){
+    //     return finalResult;
+    // });
+
+
+    // const usernames = Promi;
+    // console.log(list_of_usernames)
+    // Promise.all(list_of_usernames).then(res => console.log(res));
+
+
+    return list_of_usernames;
+}
+
 /**
  * Given a post, return a tile with the relevant data
  * @param   {object}        post 
  * @returns {HTMLElement}
  */
 export function createPostTile(post) {
-    const section = createElement('section', null, { class: 'post' });
+
+    var token = window.localStorage.getItem('token');
+
+    const section = createElement('section', null, { class: 'post' , id: post.id});
 
     section.appendChild(createElement('h2', post.meta.author, { class: 'post-title' }));
 
     section.appendChild(createElement('img', null, 
         { src: 'data:image/png;base64,'+post.src, alt: post.meta.description_text, class: 'post-image' }));
 
+    const post_interactive = createElement('div', null, {class: 'post-interactive'});
+    var like_button = createElement('span', 'like', {class: 'like_button' });
+
+    // check if a post is already liked by the user
+    fetch(`${API_URL}/user`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization' : `Token ${token}`
+        }
+    }).then(function(res) {
+        if (res.status == 200) {
+            res.json().then(data => {
+                for (var i=0; i<post.meta.likes.length; i++) {
+                    if (post.meta.likes[i] == data.id) {
+                        like_button.textContent = 'liked';
+                    }
+                }
+            })
+        }
+    })
+
+    var number_of_likes = post.meta.likes.length;
+    var liked_people = createElement('a', `${number_of_likes} likes`, {class: 'post-like', href: '#modalWindow'})
+    if (number_of_likes == 1) {
+        liked_people.textContent = `${number_of_likes} like`
+    }
+
+
+    like_button.addEventListener('click', function() {
+        var query = `${API_URL}/post/like?id=${post.id}`;
+        fetch(query, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Token ${token}`
+            }
+        }).then(function(res) {
+            if (res.status==200 && like_button.textContent != 'liked') {
+                like_button.textContent = 'liked';
+                number_of_likes++;
+                if (number_of_likes == 1){
+                    liked_people.textContent = `${number_of_likes} like`;
+                } else {
+                    liked_people.textContent = `${number_of_likes} likes`;
+                }
+            }
+        })
+        .catch(err => console.warn(`API_ERROR: ${err.message}`));
+    })
+    post_interactive.appendChild(like_button);
+
+    section.appendChild(post_interactive);
+
     section.appendChild(createElement('h4', post.meta.description_text, { class: 'post-description' }));
 
-    const number_of_likes = post.meta.likes.length;
-    if (number_of_likes > 0) {
-        if (number_of_likes > 1) {
-            section.appendChild(createElement('h5', `${number_of_likes} likes`, {class: 'post-like' }));
-        } else {
-            section.appendChild(createElement('h5', `${number_of_likes} like`, {class: 'post-like' }));
-        }
-    } else {
-        section.appendChild(createElement('h5', `0 likes`, {class: 'post-like' }));
+    liked_people.addEventListener('click', function() {
+        var people = getUserNames(post.meta.likes);
+        people.then(function(names) {
+            var modalContent = document.getElementById('modalContent');
+            clearModalContent();
+            for (var i=0; i<names.length; i++){
+                var name = names[i];
+                modalContent.appendChild(createElement('li', name, {class: 'liked_users'}));
+            }
+        })
+    })
+
+    section.appendChild(liked_people);
+
+    var number_of_comments = post.comments.length;
+    var comments_button = createElement('a', `${number_of_comments} comments`, {class: 'see_comments', href: '#modalWindow'})
+    if (number_of_comments == 1) {
+        comments_button.textContent = `${number_of_comments} comment`;
     }
 
-    const number_of_comments = post.comments.length;
-    if (number_of_comments > 0) {
-        if (number_of_comments > 1) {
-            section.appendChild(createElement('h5', `${number_of_comments} comments`, {class: 'post-comment'}));
-        } else {
-            section.appendChild(createElement('h5', `${number_of_comments} comment`, {class: 'post-comment'}));
+    comments_button.addEventListener('click', function() {
+        clearModalContent()
+        var modalContent = document.getElementById('modalContent');
+        for (var i=0; i<number_of_comments; i++) {
+            modalContent.appendChild(createElement('li', post.comments[i].comment, {class: 'user_comments'}));
         }
-    } else {
-        section.appendChild(createElement('h5', `${number_of_comments} comments`, {class: 'post-comment'}));
-    }
+    })
 
-    section.appendChild(createElement('h6', post.meta.published, { class: 'post-time'}));
+
+    // <input type="text" name="lgafilter3" id="lgafilter3">
+    var comment_box = createElement('div', null, {class: 'comment_box'})
+    var comment_content = createElement('input', null, {type: "text", name: "post_comment", class: "post_comment", placeholder: "insert comment here..."})
+    comment_box.appendChild(comment_content);
+    var post_comment_button = createElement('button', 'post comment', {name: 'post_comment_button'})
+
+    post_comment_button.addEventListener('click', function() {
+        var newComment = comment_content.value;
+        if (newComment){
+            fetch(`${API_URL}/post/comment?id=${post.id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    comment : newComment
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization' : `Token ${token}`
+                }
+            }).then(function(response) {
+                if (response.status == 200) {
+                    comment_content.value = '';
+                    number_of_comments++;
+                    if (number_of_comments == 1) {
+                        comments_button.textContent = `${number_of_comments} comment`;
+                    } else {
+                        comments_button.textContent = `${number_of_comments} comments`;
+                    }
+                }
+            })
+        }
+    })
+
+
+
+    section.append(comments_button);
+    comment_box.appendChild(post_comment_button);
+
+    section.appendChild(comment_box);
+    section.appendChild(createElement('h6', Date(post.meta.published), { class: 'post-time'}));
 
     return section;
+}
+
+// Clear model content
+export function clearModalContent() {
+    var modalContent = document.getElementById('modalContent');
+    while(modalContent.firstChild) {
+        modalContent.removeChild(modalContent.firstChild);
+    }
 }
 
 // Given an input element of type=file, grab the data uploaded for use
@@ -93,7 +236,7 @@ export function uploadImage(event) {
     };
 
     // this returns a base64 image
-    reader.readAsDataURL(file);
+    console.log(reader.readAsDataURL(file));
 }
 
 /* 

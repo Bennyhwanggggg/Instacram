@@ -49,6 +49,12 @@ footer {
      text-decoration: none; 
 }
 
+.post a{
+     text-decoration: none;
+     display: inline-block;
+     margin-right: 42px;
+}
+
 .post {
     max-width: 640px;
     overflow: hidden;
@@ -96,3 +102,45 @@ footer {
 }
 
 /* Add your styles here */
+
+.like_button {
+    cursor: pointer;
+}
+
+.see_comments {
+    cursor: pointer;
+}
+
+.post_comment {
+    width: 80%;
+}
+
+#modalWindow {
+    position: fixed;
+    font-family: arial,helvetica, sans-serif;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 99999;
+    opacity:0;
+    transition: opacity 400ms linear;
+    pointer-events: none;
+}
+#modalWindow:target {
+    opacity:0.8;
+    pointer-events: auto;
+}
+#modalWindow > div {
+    width: 400px;
+    height: 240px;
+    position: relative;
+    margin: 10% auto;
+    padding: 20px 20px 13px 20px;
+    border: solid;
+    border-color: black;
+    border-width : 2px;
+    background: #FFFFFF;
+    border-radius: 10px;
+}   

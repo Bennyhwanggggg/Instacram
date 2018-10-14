@@ -11,8 +11,6 @@ const api  = new API();
 
 const feed = api.getFeeds();
 
-feed.then(posts => {console.log(posts)});
-
 feed
 .then(posts => {
     posts['posts'].reduce((parent, post) => {
@@ -43,5 +41,8 @@ function getCurrentUser(){
 	if (window.localStorage)
         return window.localStorage.getItem('logged_in');
     else
-        return null
+        return null;
 }
+
+
+
