@@ -94,9 +94,3 @@ Add just the count of followers / follows to everyones public user page
 
 **Delete/Update Post**
 Let a user update a post they made or delete it via (`DELETE /post`) or (`PUT /post`)
-
-```
-/#profile=me
-/#feed
-/#profile=janecitizen
-```
